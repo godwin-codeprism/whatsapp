@@ -21,8 +21,8 @@ driver = webdriver.Chrome()
 driver.get('https://web.whatsapp.com')
 driver.execute_script(open("./godwin_new.js").read())
 driver.get('https://web.whatsapp.com')
-time.sleep(10)
-currentChat = 4
+time.sleep(15)
+currentChat = 0
 currentChatName = ""
 chatElm = driver.find_elements_by_class_name('chat')[currentChat]
 chatElm.click()
@@ -32,26 +32,26 @@ time.sleep(2)
 
 def scrollUp():
     while len(driver.find_elements_by_class_name('_1MsrQ')) != 0:
-        driver.find_elements_by_class_name('pane-chat-body')[0].send_keys(Keys.ARROW_UP)
-        if len(driver.find_elements_by_class_name('_1MsrQ')) == 0:
-            print('Finished Scrolling: Going to next chat')
-            global data
-            global chatElm
-            global currentChatName
-            global currentChat
-            global endText
+        driver.execute_script("document.getElementsByClassName('pane-chat-body')[0].scrollTo(0,0);")
+        #driver.find_elements_by_class_name('pane-chat-body')[0].send_keys(Keys.ARROW_UP)
+    else:
+        print('Finished Scrolling: Going to next chat')
+        global data
+        global chatElm
+        global currentChatName
+        global currentChat
+        global endText
 
-            f = open(currentChatName+".html", "w",encoding='utf-8')
-            f.write(data+driver.execute_script("return document.getElementById('main').innerHTML")+endText)
-            f.close()
-            currentChat += 1
-            chatElm = driver.find_elements_by_class_name('chat')[currentChat]
-            chatElm.click()
-            currentChatName = chatElm.find_elements_by_class_name('chat-title')[0].text
-            time.sleep(2)
-            scrollUp()
-            break
+        f = open(currentChatName+".html", "w",encoding='utf-8')
+        f.write(data+driver.execute_script("return document.getElementById('main').innerHTML")+endText)
+        f.close()
+        currentChat += 1
+        driver.execute_script("document.getElementsByClassName('chatlist-panel-body')[0].scrollTo(0,document.getElementsByClassName('chatlist-panel-body')[0].scrollTop + 70);");
+        chatElm = driver.find_elements_by_class_name('chat')[currentChat]
+        chatElm.click()
+        currentChatName = chatElm.find_elements_by_class_name('chat-title')[0].text
+        time.sleep(2)
+        scrollUp()
 
 
 scrollUp()
-# set_interval(scrollUp,0.001)
