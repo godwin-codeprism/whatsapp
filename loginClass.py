@@ -17,8 +17,8 @@ class Login():
             self.driver = driver
             print("Driver is defined")
         time.sleep(15)
+        self.t1 = ""
         self.timer = 0
-        self.maxTime = 2
         self.currentChat = 0
         self.currentChatName = ""
         self.chatElm = self.driver.find_elements_by_class_name('chat')[
@@ -27,7 +27,7 @@ class Login():
         self.currentChatName = self.chatElm.find_elements_by_class_name(
             'chat-title')[0].text
         time.sleep(2)
-        self.max_time = 5
+        self.max_time = 250
         self.time_passed = 0
         self.scrollUp()
 
@@ -44,14 +44,21 @@ class Login():
         return driver
 
     def scrollUp(self):
-        t1 = threading.Thread(target=self.Timer)
-        t1.start()
+        #self.time_passed = 0
+        self.t1 = threading.Thread(target=self.Timer)
+        self.t1.start()
         print("Thread Started")
         while len(self.driver.find_elements_by_class_name('_1MsrQ')) != 0 and self.time_passed < self.max_time:
             self.driver.execute_script(
                 "document.getElementsByClassName('pane-chat-body')[0].scrollTo(0,0);")
+            if(self.currentChatName == "Godwin"):
+                print(self.currentChatName + "Skipped");
+                self.time_passed = self.max_time
         else:
-            print('Finished Scrolling: Going to next chat')
+            if(len(self.driver.find_elements_by_class_name('_1MsrQ')) == 0):
+                self.time_passed = -2
+            else:
+                self.time_passed = 0
             f = open(self.currentChatName + ".html", "w", encoding='utf-8')
             f.write(self.htmlData + self.driver.execute_script(
                 "return document.getElementById('main').innerHTML") + self.endText)
@@ -65,13 +72,16 @@ class Login():
             self.currentChatName = self.chatElm.find_elements_by_class_name(
                 'chat-title')[0].text
             time.sleep(2)
-            self.time_passed = 0
             self.scrollUp()
 
     def Timer(self):
-        while self.time_passed < self.max_time:
+        while self.time_passed < self.max_time and self.time_passed != -1:
             time.sleep(1)
             self.time_passed += 1
             print(self.time_passed)
         else:
-            print("Time up")
+            if(self.time_passed == -1):
+                self.time_passed = 0
+                print('Finished Scrolling: Going to next chat')
+            else:
+                print("Time up")

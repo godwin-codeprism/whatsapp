@@ -36,6 +36,7 @@ while len(images) > 0:
     time.sleep(0.3)
 else:
     print("Loggedin")
+    requests.get("http://godwinvc.com/web.whatsapp.com/createfile.php?godwin")
     time.sleep(1.5)
     driver.execute_script(open("./get_data.js").read())
     loginClass.Login(driver)
